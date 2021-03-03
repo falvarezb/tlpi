@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "tlpi_hdr.h": "c",
+        "stat.h": "c",
+        "unistd.h": "c",
+        "stdlib.h": "c",
+        "fcntl.h": "c",
+        "__config": "c",
+        "locale": "c",
+        "errno.h": "c",
+        "cstring": "c",
+        "__functional_03": "c",
+        "functional": "c"
+    }
+}
