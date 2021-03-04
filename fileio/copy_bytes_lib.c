@@ -42,14 +42,14 @@ int main(int argc, char *argv[]) {
 
     /* Open input and output files */
 
-    inputFd = fopen(argv[1], "r");
+    inputFd = fopen(argv[1], "rb");
     if (inputFd == NULL) {
         printf("error %d while opening file %s", errno, argv[1]);
         perror("");
         exit(EXIT_FAILURE);
     }
 
-    outputFd = fopen(argv[2], "wb");
+    outputFd = fopen(argv[2], "w");
     if (outputFd == NULL) {
         printf("error %d while opening file %s", errno, argv[2]);
         perror("");
@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
 
         if (fwrite(write_buf, 1, numRead * BUF_EXPANSION_FACTOR, outputFd) != numRead * BUF_EXPANSION_FACTOR) {
             perror("write() returned error or partial write occurred");
+            printf("error %d while writing file %s", errno, argv[1]);
             exit(EXIT_FAILURE);
         }
     }
