@@ -10,6 +10,7 @@
         "errno.h": "c",
         "cstring": "c",
         "__functional_03": "c",
-        "functional": "c"
+        "functional": "c",
+        "types.h": "c"
     }
 }
