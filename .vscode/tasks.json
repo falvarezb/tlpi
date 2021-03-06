@@ -6,6 +6,7 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
+                "-std=c11",
                 "-I./lib",
                 "lib/error_functions.c",
                 "${file}",

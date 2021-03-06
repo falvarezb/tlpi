@@ -11,6 +11,9 @@
         "cstring": "c",
         "__functional_03": "c",
         "functional": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "string.h": "c",
+        "_string.h": "c",
+        "cdefs.h": "c"
     }
 }
