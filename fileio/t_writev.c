@@ -3,59 +3,114 @@
 
    Demonstrate the use of the writev() system call to perform "gather output".
 */
-#include <sys/stat.h>
-#include <sys/uio.h>
-#include <fcntl.h>
-#include "tlpi_hdr.h"
 
-#define IOVEC_SIZE 1
+#include <sys/uio.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+
+#define IOVEC_SIZE 11
+
+void errorExit(char *format, const char *text) {
+    printf(format, errno, text);
+    perror("");
+    exit(EXIT_FAILURE);
+}
 
 int
 main(int argc, char *argv[])
 {
-    int fd;
+    size_t fd, i, totRequired;
     struct iovec iov[IOVEC_SIZE];
-    int x = 1; 
-    long y = 10;                     
+    uint8_t ux8 = 10;
+    uint16_t ux16 = 10;
+    uint32_t ux32 = 10;
+    uint64_t ux64 = 10;
+    int8_t x8 = -128;
+    int16_t x16 = -128;                     
+    int32_t x32 = -128;                     
+    int64_t x64 = -128;
+    float f = 10;
+    double d = 10;                  
     char *str = "hello";         
-    ssize_t numWritten, totRequired;
 
     if (argc != 2 || strcmp(argv[1], "--help") == 0)
-        usageErr("%s file\n", argv[0]);
+        printf("%s file\n", argv[0]);
 
     fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC);
     if (fd == -1)
-        errExit("open");
+        errorExit("error %d while opening file %s", argv[1]);
 
     totRequired = 0;
 
-    size_t idx = 1;
+    i = 0;
+    iov[i].iov_base = &ux8;
+    iov[i].iov_len = sizeof(ux8);
+    totRequired += iov[i].iov_len;
 
-    // iov[idx].iov_base = &x;
-    // iov[idx].iov_len = sizeof(x);
-    // totRequired += iov[idx].iov_len;
+    i = 1;
+    iov[i].iov_base = &ux16;
+    iov[i].iov_len = sizeof(ux16);
+    totRequired += iov[i].iov_len;
 
-    idx = 0;
-    iov[idx].iov_base = str;
-    iov[idx].iov_len = strlen(str);
-    totRequired += iov[idx].iov_len;
+    i = 2;
+    iov[i].iov_base = &ux32;
+    iov[i].iov_len = sizeof(ux32);
+    totRequired += iov[i].iov_len;
 
-    // idx = 2;
-    // iov[idx].iov_base = &y;
-    // iov[idx].iov_len = sizeof(y);
-    // totRequired += iov[idx].iov_len;
+    i = 3;
+    iov[i].iov_base = &ux64;
+    iov[i].iov_len = sizeof(ux64);
+    totRequired += iov[i].iov_len;
 
-    numWritten = writev(fd, iov, IOVEC_SIZE);
-    if (numWritten == -1)
-        errExit("writev");
+    i = 4;
+    iov[i].iov_base = &x8;
+    iov[i].iov_len = sizeof(x8);
+    totRequired += iov[i].iov_len;
 
-    if (numWritten < totRequired)
-        printf("Partial write\n");
+    i = 5;
+    iov[i].iov_base = &x16;
+    iov[i].iov_len = sizeof(x16);
+    totRequired += iov[i].iov_len;
 
-    close(fd);
+    i = 6;
+    iov[i].iov_base = &x32;
+    iov[i].iov_len = sizeof(x32);
+    totRequired += iov[i].iov_len;
 
-    /*FIXME: should use %zd here, and remove (long) cast */
-    printf("total bytes requested: %ld; bytes written: %ld\n",
-            (long) totRequired, (long) numWritten);
+    i = 7;
+    iov[i].iov_base = &x64;
+    iov[i].iov_len = sizeof(x64);
+    totRequired += iov[i].iov_len;
+
+    i = 8;
+    iov[i].iov_base = &f;
+    iov[i].iov_len = sizeof(f);
+    totRequired += iov[i].iov_len;
+
+    i = 9;
+    iov[i].iov_base = &d;
+    iov[i].iov_len = sizeof(d);
+    totRequired += iov[i].iov_len;
+
+    i = 10;
+    iov[i].iov_base = str;
+    iov[i].iov_len = strlen(str);
+    totRequired += iov[i].iov_len;
+
+
+    if(writev(fd, iov, IOVEC_SIZE) != totRequired) {
+        perror("write() returned error or partial write occurred");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%zu totRequired", totRequired);
+
+    if (close(fd) == -1) perror("close input");
+
     exit(EXIT_SUCCESS);
 }
