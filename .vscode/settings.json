@@ -14,6 +14,7 @@
         "types.h": "c",
         "string.h": "c",
         "_string.h": "c",
-        "cdefs.h": "c"
+        "cdefs.h": "c",
+        "uio.h": "c"
     }
 }

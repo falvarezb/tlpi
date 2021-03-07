@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/out/${fileBasenameNoExtension}",
-            "args": ["/Users/franciscoalvarez/Downloads/ex3", "/Users/franciscoalvarez/Downloads/jpg2"],
+            "args": ["/Users/franciscoalvarez/Downloads/seekex", "/Users/franciscoalvarez/Downloads/seekexcopy"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
