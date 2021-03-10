@@ -37,7 +37,7 @@ main(int argc, char *argv[])
     float f = 10;
     double d = 10;                  
     char *str = "hello";   
-    struct __attribute__((__packed__)) {
+    struct {
         char first;
         char second;
         char third;
@@ -139,4 +139,10 @@ Things to learn:
 00 00 00 00 00 00 24 40 
 68 65 6c 6c 6f 
 61 62 63 00 10 00 00 00 <-- padding with zero byte (the one after 63) for memory alignment, word length is 4 bytes
+
+Read as short 
+2570 2560 0 2560 0 0 0 32768 65408 65408 65535 65408 65535 65535 65535 0 16672 0 0 0 16420 25960 27756 24943 25442 4096 0 
+
+Read as int
+167774730 167772160 0 2147483648 4286644096 4286644223 4294967295 65535 16672 0 1701330980 1634692204 268460898
 */
