@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define IOVEC_SIZE 11
+#define IOVEC_SIZE 12
 
 void errorExit(char *format, const char *text) {
     printf(format, errno, text);
@@ -36,7 +36,13 @@ main(int argc, char *argv[])
     int64_t x64 = -128;
     float f = 10;
     double d = 10;                  
-    char *str = "hello";         
+    char *str = "hello";   
+    struct __attribute__((__packed__)) {
+        char first;
+        char second;
+        char third;
+        int fourth;
+    } mystruct = {'a', 'b', 'c', 16};   
 
     if (argc != 2 || strcmp(argv[1], "--help") == 0)
         printf("%s file\n", argv[0]);
@@ -102,6 +108,11 @@ main(int argc, char *argv[])
     iov[i].iov_len = strlen(str);
     totRequired += iov[i].iov_len;
 
+    i = 11;
+    iov[i].iov_base = &mystruct;
+    iov[i].iov_len = sizeof(mystruct);
+    totRequired += iov[i].iov_len;
+
 
     if(writev(fd, iov, IOVEC_SIZE) != totRequired) {
         perror("write() returned error or partial write occurred");
@@ -114,3 +125,18 @@ main(int argc, char *argv[])
 
     exit(EXIT_SUCCESS);
 }
+/*
+Things to learn:
+0a 
+0a 00  <-- little endian representation: least significant bytes come first
+0a 00 00 00 
+0a 00 00 00 00 00 00 00 
+80 
+80 ff 
+80 ff ff ff 
+80 ff ff ff ff ff ff ff 
+00 00 20 41 
+00 00 00 00 00 00 24 40 
+68 65 6c 6c 6f 
+61 62 63 00 10 00 00 00 <-- padding with zero byte (the one after 63) for memory alignment, word length is 4 bytes
+*/
