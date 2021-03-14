@@ -1,7 +1,3 @@
-/*
-    Return size of a file
-*/
-
 #include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
