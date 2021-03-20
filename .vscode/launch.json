@@ -11,7 +11,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/out/${fileBasenameNoExtension}",
-            "args": ["2", "0", "bye"],
+            "args": ["/Users/franciscoalvarez/MyProjects/tlpi-dist/myfile"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
