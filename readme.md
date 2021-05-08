@@ -6,3 +6,13 @@ gcc  -I./lib fileio/t_truncate.c lib/error_functions.c lib/get_num.c -o fileio/o
 gcc  -I./lib fileio/t_writev.c lib/error_functions.c -o fileio/out/t_writev
 gcc  -I./lib fileio/atomic_append.c lib/error_functions.c lib/get_num.c -o fileio/out/atomic_append
 gcc  -I./lib fileio/multi_descriptors.c lib/error_functions.c -o fileio/out/multi_descriptors
+
+gcc  -I./lib sockets/i6d_ucase_sv.c lib/error_functions.c -o sockets/out/i6d_ucase_sv
+gcc  -I./lib sockets/i6d_ucase_cl.c lib/error_functions.c -o sockets/out/i6d_ucase_cl
+
+gcc  -I./lib sockets/is_seqnum_sv.c sockets/read_line.c lib/error_functions.c lib/get_num.c -o sockets/out/is_seqnum_sv
+gcc  -I./lib sockets/is_seqnum_cl.c  sockets/read_line.c lib/error_functions.c lib/get_num.c -o sockets/out/is_seqnum_cl
+
+
+gcc sockets/tcpclient.c -o sockets/out/tcpclient
+gcc sockets/tcpserver.c -o sockets/out/tcpserver
