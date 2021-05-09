@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 
         /* Read client request */
 
-        sleep(10);
+        //sleep(10);
         while ((num_read = read(cfd, buf, BUF_SIZE)) > 0) {
             tot_received += num_read;
         }
