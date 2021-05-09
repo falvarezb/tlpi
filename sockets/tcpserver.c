@@ -12,7 +12,7 @@
 
 #define BACKLOG 50
 #define BUF_SIZE 1024
-#define PORT_NUM "50000"
+#define PORT_NUM "6666"
 
 void errorExit(char *format, const char *text) {
     printf(format, errno, text);
@@ -90,7 +90,7 @@ main(int argc, char *argv[])
     if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)    perror("signal");
 
     lfd = open_listener_socket();
-    printf("listening for connections...\n");
+    printf("listening for connections on port %s...\n", PORT_NUM);
 
     for (;;) {                  /* Handle clients iteratively */
 
@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 
         /* Read client request */
 
-        sleep(600);
+        sleep(10);
         while ((num_read = read(cfd, buf, BUF_SIZE)) > 0) {
             tot_received += num_read;
         }

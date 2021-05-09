@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #define BUF_SIZE 1024
-#define PORT_NUM "50000"
+#define PORT_NUM "6666"
 
 void errorExit(char *format, const char *text) {
     printf(format, errno, text);
@@ -49,7 +49,7 @@ int establish_connection(const char* hostname) {
     }
 
     if (rp == NULL){
-        printf("Could not connect socket to any address");
+        printf("Could not connect socket to any address\n");
     }
 
     freeaddrinfo(result);
@@ -84,18 +84,18 @@ main(int argc, char *argv[])
     //sleep(300);
     while ((num_read = read(fd, buf, BUF_SIZE)) > 0) {
         if (write(sfd, buf, num_read) !=  num_read)
-            errorExit("error %d while writing to socket %s", "");
+            errorExit("error %d while writing to socket %s\n", "");
 
         tot_sent += num_read;
-        //printf("Total sent: %zd\n", tot_sent); 
+        printf("Total sent: %zd\n", tot_sent); 
     }
 
-    if (num_read == -1) errorExit("error %d while reading file %s", argv[2]);
+    if (num_read == -1) errorExit("error %d while reading file %s\n", argv[2]);
     if (close(fd) == -1) perror("close input");
 
 
     printf("Total sent: %zd\n", tot_sent);   /* Includes '\n' */
-    sleep(5);
+    //sleep(5);
 
     exit(EXIT_SUCCESS);                         /* Closes 'cfd' */
 }
