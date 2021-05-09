@@ -75,11 +75,10 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    int sfd = establish_connection(argv[1]);
-
-    //Multiple requests on the same connection
+    //Multiple requests on different connections
     int num_req = atoi(argv[3]);
     for (size_t i = 0; i < num_req; i++) {
+        int sfd = establish_connection(argv[1]);
         int fd = open_file(argv[2]);
 
         while ((num_read = read(fd, buf, BUF_SIZE)) > 0) {
