@@ -91,7 +91,8 @@ int main(int argc, char *argv[]) {
 
         if (num_read == -1)
             errorExit("error %d while reading file %s\n", argv[2]);
-        if (close(fd) == -1) perror("close input");        
+        if (close(fd) == -1) perror("close file");   
+        if (close(sfd) == -1) perror("close socket");   
     }
     printf("Total sent: %zd\n", tot_sent);
 
