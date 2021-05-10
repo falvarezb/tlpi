@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 #define BUF_SIZE 1024
 #define PORT_NUM "6666"
@@ -69,16 +70,20 @@ int main(int argc, char *argv[]) {
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     char buf[BUF_SIZE];
+    time_t t;
+    double time_diff;
 
     if (argc < 4 || strcmp(argv[1], "--help") == 0) {
         printf("%s server-host file num-requests \n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    //Multiple requests on different connections
-    int num_req = atoi(argv[3]);
-    for (size_t i = 0; i < num_req; i++) {
-        int sfd = establish_connection(argv[1]);
+    int sfd = establish_connection(argv[1]);
+
+    //Multiple requests on same connection
+    size_t num_req = atoi(argv[3]);
+    t = time(NULL);
+    for (size_t i = 0; i < num_req; i++) {        
         int fd = open_file(argv[2]);
 
         while ((num_read = read(fd, buf, BUF_SIZE)) > 0) {
@@ -87,6 +92,12 @@ int main(int argc, char *argv[]) {
 
             tot_sent += num_read;
             //printf("Total sent: %zd\n", tot_sent);
+        }
+
+        if(i == num_req/4-1 || i == num_req/2-1 || i == 3*num_req/4-1 || i == num_req-1) {
+            time_diff = difftime(time(NULL), t);
+            printf ("It took me %f seconds to do %zu iterations.\n",time_diff, i+1);
+            t = time(NULL); 
         }
 
         if (num_read == -1)
