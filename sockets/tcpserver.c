@@ -8,7 +8,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <signal.h>
 
 #define BACKLOG 50
 #define BUF_SIZE 1024
