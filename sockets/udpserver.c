@@ -24,7 +24,7 @@ main(int argc, char *argv[])
     
     printf("listening for connections on port %s...\n", PORT_NUM);
 
-    while(1) {                  /* Handle clients iteratively */
+    while(1) {                 
 
         tot_received = 0;        
         
