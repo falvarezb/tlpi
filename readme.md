@@ -17,4 +17,4 @@ gcc  -I./lib sockets/is_seqnum_cl.c  sockets/read_line.c lib/error_functions.c l
 gcc -c -I./lib sockets/inet_sockets.c lib/error_functions.c lib/get_num.c
 
 gcc sockets/tcpclient.c -o sockets/out/tcpclient
-gcc sockets/tcpserver.c -o sockets/out/tcpserver
+gcc  -I./lib sockets/tcpserver.c lib/error_functions.c sockets/inet_sockets.c -o sockets/out/tcpserver
