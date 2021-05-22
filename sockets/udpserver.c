@@ -23,19 +23,16 @@ main(int argc, char *argv[])
     if (sfd == -1) errExit("error while opening socket");
     
     printf("listening for connections on port %s...\n", PORT_NUM);
-
-    while(1) {                 
-
-        tot_received = 0;        
-        
-        while ((num_read = read(sfd, buf, BUF_SIZE)) > 0) {
-            tot_received += num_read;
-            printf("Total received: %zd\n", tot_received);
-        }
-
-        if (num_read == -1) errExit("error while reading client data"); 
-
-        if (close(sfd) == -1)           /* Close connection */
-            errMsg("close connection");
+            
+    tot_received = 0;        
+    
+    while ((num_read = read(sfd, buf, BUF_SIZE)) > 0) {
+        tot_received += num_read;
+        printf("Total received: %zd\n", tot_received);
     }
+
+    if (num_read == -1) errExit("error while reading client data"); 
+
+    if (close(sfd) == -1)           /* Close connection */
+        errMsg("close connection");
 }

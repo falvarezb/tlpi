@@ -34,6 +34,7 @@
                 "-std=c11",
                 "-I./lib",
                 "${fileDirname}/read_line.c",
+                "${fileDirname}/inet_sockets.c",
                 "lib/get_num.c",
                 "lib/error_functions.c",
                 "${file}",

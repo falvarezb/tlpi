@@ -52,6 +52,7 @@ inetConnect(const char *host, const char *service, int type)
 
     s = getaddrinfo(host, service, &hints, &result);
     if (s != 0) {
+        printf("getaddrinfo error %d\n", s);
         errno = ENOSYS;
         return -1;
     }
