@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
     if (write(tcpfd, msg, strlen(msg)) != strlen(msg)) errExit("error while sending data\n");    
     if ((num_read = read(tcpfd, buf, BUF_SIZE)) <= 0) errExit("error while reading num bytes\n");     
     printf("Total received: %s\n", readbuf(buf, num_read));
+    printf("received/sent: %f\n", strtof(readbuf(buf, num_read), NULL) / tot_sent);
     if (close(tcpfd) == -1) errMsg("close tcp connection");
     //end TCP
 
