@@ -45,12 +45,14 @@ void* tcp_handler(void* arg) {
                     tot_received = 0;
                     if (write(cldata.cfd, RESET_COUNTER_ACK, strlen(RESET_COUNTER_ACK)) != strlen(RESET_COUNTER_ACK)) errMsg("write() returned error or partial write occurred\n");
                 } else if (strcmp(instruction, RETURN_COUNTER) == 0) {                    
-                    num_write = snprintf(buf, BUF_SIZE, "%zd", tot_received);
-                    if(num_write > 0 && num_write < BUF_SIZE) {                        
-                        if (write(cldata.cfd, buf, num_write) != num_write) errMsg("write() returned error or partial write occurred\n");
-                    } 
-                    else if(num_write < 0) errMsg("encoding error when marshalling 'tot_received'\n");                    
-                    else errMsg("buffer size too small %d\n", BUF_SIZE);
+                    // num_write = snprintf(buf, BUF_SIZE, "%zd", tot_received);
+                    // if(num_write > 0 && num_write < BUF_SIZE) {                        
+                    //     if (write(cldata.cfd, buf, num_write) != num_write) errMsg("write() returned error or partial write occurred\n");
+                    // } 
+                    // else if(num_write < 0) errMsg("encoding error when marshalling 'tot_received'\n");                    
+                    // else errMsg("buffer size too small %d\n", BUF_SIZE);
+                    size_t total = htonl(tot_received);
+                    write(cldata.cfd, &total, sizeof(total));
                     
                 } else {                    
                     //ignore unknown instruction

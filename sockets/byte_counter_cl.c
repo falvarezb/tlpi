@@ -58,10 +58,15 @@ int main(int argc, char *argv[]) {
 
     msg = RETURN_COUNTER INSTRUCTION_DELIMITER;
     if (write(tcpfd, msg, strlen(msg)) != strlen(msg)) errExit("error while sending data\n");    
-    if ((num_read = read(tcpfd, buf, BUF_SIZE-1)) <= 0) errExit("error while reading num bytes\n");  
-    buf[num_read] = '\0';   
-    printf("Total received: %s\n", buf);
-    printf("received/sent: %f\n", strtof(buf, NULL) / tot_sent);
+    // if ((num_read = read(tcpfd, buf, BUF_SIZE-1)) <= 0) errExit("error while reading num bytes\n");  
+    // buf[num_read] = '\0';   
+    // printf("Total received: %s\n", buf);
+    // printf("received/sent: %f\n", strtof(buf, NULL) / tot_sent);
+
+    ssize_t total;
+    if ((num_read = read(tcpfd, &total, sizeof(total))) <= 0) errExit("error while reading num bytes\n");  
+    total = ntohl(total);
+    printf("Total received: %zd\n", total);
     if (close(tcpfd) == -1) errMsg("close tcp connection");
     //end TCP
 
