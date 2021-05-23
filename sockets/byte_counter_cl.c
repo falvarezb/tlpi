@@ -10,11 +10,6 @@
 #define UDP_PORT_NUM "6666"
 #define TCP_PORT_NUM "6666"
 
-char* readbuf(char* buf, size_t num_read) {
-    buf[num_read] = '\0'; 
-    return buf;   
-}
-
 size_t send_file(const char* filename, int sfd) {
     int fd;
     ssize_t num_read, tot_sent = 0;
@@ -34,7 +29,7 @@ size_t send_file(const char* filename, int sfd) {
 
 int main(int argc, char *argv[]) {    
     ssize_t num_read, tot_sent = 0;    
-    char buf[BUF_SIZE + 1];   
+    char buf[BUF_SIZE];   
     int udpfd, tcpfd, fd; 
     char *msg;
 
@@ -47,8 +42,9 @@ int main(int argc, char *argv[]) {
     if ((tcpfd = inetConnect(argv[1], TCP_PORT_NUM, SOCK_STREAM)) == -1) errExit("error while connecting to %s:%s", serverhost, TCP_PORT_NUM);
     msg = RESET_COUNTER INSTRUCTION_DELIMITER;
     if (write(tcpfd, msg, strlen(msg)) != strlen(msg)) errExit("error while sending data\n");
-    if ((num_read = read(tcpfd, buf, BUF_SIZE)) < 0) errExit("error while reading\n");
-    if (strcmp(readbuf(buf, num_read), RESET_COUNTER_ACK) != 0) errExit("unexpected message\n", buf);
+    if ((num_read = read(tcpfd, buf, BUF_SIZE-1)) < 0) errExit("error while reading\n");
+    buf[num_read] = '\0';
+    if (strcmp(buf, RESET_COUNTER_ACK) != 0) errExit("unexpected message\n", buf);
 
     //initiating dialogue with UDP endpoint
     if ((udpfd = inetConnect(argv[1], UDP_PORT_NUM, SOCK_DGRAM)) == -1) errExit("error while connecting to %s:%s", serverhost, UDP_PORT_NUM);      
@@ -62,9 +58,10 @@ int main(int argc, char *argv[]) {
 
     msg = RETURN_COUNTER INSTRUCTION_DELIMITER;
     if (write(tcpfd, msg, strlen(msg)) != strlen(msg)) errExit("error while sending data\n");    
-    if ((num_read = read(tcpfd, buf, BUF_SIZE)) <= 0) errExit("error while reading num bytes\n");     
-    printf("Total received: %s\n", readbuf(buf, num_read));
-    printf("received/sent: %f\n", strtof(readbuf(buf, num_read), NULL) / tot_sent);
+    if ((num_read = read(tcpfd, buf, BUF_SIZE-1)) <= 0) errExit("error while reading num bytes\n");  
+    buf[num_read] = '\0';   
+    printf("Total received: %s\n", buf);
+    printf("received/sent: %f\n", strtof(buf, NULL) / tot_sent);
     if (close(tcpfd) == -1) errMsg("close tcp connection");
     //end TCP
 
