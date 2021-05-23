@@ -38,22 +38,30 @@ void* tcp_handler(void* arg) {
 
         //read instructions  
         while ((num_read = read(cldata.cfd, buf, BUF_SIZE)) > 0) {   
-            char *ptr = strtok(buf, INSTRUCTION_DELIMITER);
-            while (ptr != NULL) {
-                if (strcmp(buf, RESET_COUNTER) == 0) {
+            printf("read data %s\n", buf);
+            char *instruction = strtok(buf, INSTRUCTION_DELIMITER);            
+            while (instruction != NULL) {
+                printf("read instruction %s\n", instruction);
+                if (strcmp(instruction, RESET_COUNTER) == 0) {                    
                     tot_received = 0;
-                } else if (strcmp(buf, RETURN_COUNTER) == 0) {
+                    if (write(cldata.cfd, RESET_COUNTER_ACK, strlen(RESET_COUNTER_ACK)) != strlen(RESET_COUNTER_ACK)) errMsg("write() returned error or partial write occurred\n");
+                } else if (strcmp(instruction, RETURN_COUNTER) == 0) {
+                    printf("writing back tot_received %zd\n", tot_received);
                     num_write = snprintf(buf, BUF_SIZE, "%zd", tot_received);
                     if(num_write > 0 && num_write < BUF_SIZE) {
-                        if (write(cldata.cfd, buf, num_write) != num_write) errMsg("write() returned error or partial write occurred");
+                        printf("writing back %s\n", buf);
+                        if (write(cldata.cfd, buf, num_write) != num_write) errMsg("write() returned error or partial write occurred\n");
                     } 
-                    else if(num_write < 0) errMsg("encoding error when marshalling 'tot_received'");
-                    else errMsg("buffer size too small %d", BUF_SIZE);
-                } else {
+                    else if(num_write < 0) errMsg("encoding error when marshalling 'tot_received'\n");                    
+                    else errMsg("buffer size too small %d\n", BUF_SIZE);
+                    
+                } else {                    
                     //ignore unknown instruction
+                    printf("unknown instruction %s\n", instruction);
                 }  
-                ptr = strtok(NULL, INSTRUCTION_DELIMITER);
-            }                   
+                instruction = strtok(NULL, INSTRUCTION_DELIMITER);
+            }  
+            memset(buf, 0, BUF_SIZE);                 
         }
 
         if (num_read == -1) {

@@ -10,6 +10,11 @@
 #define UDP_PORT_NUM "6666"
 #define TCP_PORT_NUM "6666"
 
+char* readbuf(char* buf, size_t num_read) {
+    buf[num_read] = '\0'; 
+    return buf;   
+}
+
 size_t send_file(const char* filename, int sfd) {
     int fd;
     ssize_t num_read, tot_sent = 0;
@@ -27,18 +32,11 @@ size_t send_file(const char* filename, int sfd) {
     return tot_sent;    
 }
 
-char* read_back_num_bytes(int sfd, char* buf) {
-    ssize_t num_read;        
-    while ((num_read = read(sfd, buf, BUF_SIZE)) > 0) {                          
-        if (num_read == -1) errExit("error while reading num bytes\n");        
-    }
-    return buf;
-}
-
 int main(int argc, char *argv[]) {    
     ssize_t num_read, tot_sent = 0;    
-    char buf[BUF_SIZE];   
+    char buf[BUF_SIZE + 1];   
     int udpfd, tcpfd, fd; 
+    char *msg;
 
     if (argc < 4 || strcmp(argv[1], "--help") == 0) usageErr("%s server-host file num-requests\n", argv[0]);
     char *serverhost = argv[1];
@@ -47,7 +45,10 @@ int main(int argc, char *argv[]) {
 
     //initiating dialogue with TCP endpoint
     if ((tcpfd = inetConnect(argv[1], TCP_PORT_NUM, SOCK_STREAM)) == -1) errExit("error while connecting to %s:%s", serverhost, TCP_PORT_NUM);
-    if (write(tcpfd, RESET_COUNTER, strlen(RESET_COUNTER)) != strlen(RESET_COUNTER)) errExit("error while sending data\n");
+    msg = RESET_COUNTER INSTRUCTION_DELIMITER;
+    if (write(tcpfd, msg, strlen(msg)) != strlen(msg)) errExit("error while sending data\n");
+    if ((num_read = read(tcpfd, buf, BUF_SIZE)) < 0) errExit("error while reading\n");
+    if (strcmp(readbuf(buf, num_read), RESET_COUNTER_ACK) != 0) errExit("unexpected message\n", buf);
 
     //initiating dialogue with UDP endpoint
     if ((udpfd = inetConnect(argv[1], UDP_PORT_NUM, SOCK_DGRAM)) == -1) errExit("error while connecting to %s:%s", serverhost, UDP_PORT_NUM);      
@@ -59,9 +60,10 @@ int main(int argc, char *argv[]) {
     if (close(udpfd) == -1) errMsg("close udp connection");
     //end UDP
 
-    if (write(tcpfd, RETURN_COUNTER, strlen(RETURN_COUNTER)) != strlen(RETURN_COUNTER)) errExit("error while sending data\n");    
+    msg = RETURN_COUNTER INSTRUCTION_DELIMITER;
+    if (write(tcpfd, msg, strlen(msg)) != strlen(msg)) errExit("error while sending data\n");    
     if ((num_read = read(tcpfd, buf, BUF_SIZE)) <= 0) errExit("error while reading num bytes\n");     
-    printf("Total received: %s\n", buf);
+    printf("Total received: %s\n", readbuf(buf, num_read));
     if (close(tcpfd) == -1) errMsg("close tcp connection");
     //end TCP
 
