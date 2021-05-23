@@ -24,6 +24,7 @@
         "__locale": "c",
         "netdb.h": "c",
         "is_seqnum.h": "c",
-        "inet_sockets.h": "c"
+        "inet_sockets.h": "c",
+        "__string": "c"
     }
 }
