@@ -2,6 +2,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <pthread.h>
+#include <signal.h>
 #include "tlpi_hdr.h"
 #include "inet_sockets.h"
 #include "byte_counter.h"
