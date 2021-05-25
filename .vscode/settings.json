@@ -25,6 +25,7 @@
         "netdb.h": "c",
         "is_seqnum.h": "c",
         "inet_sockets.h": "c",
-        "__string": "c"
+        "__string": "c",
+        "stdbool.h": "c"
     }
 }
