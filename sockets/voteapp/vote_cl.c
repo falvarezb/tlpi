@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     size_t req_size = encode(&vi, outbuf, MAX_WIRE_SIZE);
 
     // Print info
-    printf("Sending %d-byte %s for candidate %d...\n", req_size, (inq ? "inquiry" : "vote"), candidate);
+    printf("Sending %zu-byte %s for candidate %d...\n", req_size, (inq ? "inquiry" : "vote"), candidate);
 
     // Frame and send
     if (put_msg(outbuf, req_size, stream) < 0)

@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 
         while ((msg_size = get_next_msg(channel, inbuf, MAX_WIRE_SIZE)) > 0) {
             memset(&v, 0, sizeof(v)); // Clear vote information
-            printf("Received message (%d bytes)\n", msg_size);
+            printf("Received message (%zu bytes)\n", msg_size);
 
             if (decode(inbuf, msg_size, &v)) {
                 if (!v.isResponse) { // Ignore non-requests
