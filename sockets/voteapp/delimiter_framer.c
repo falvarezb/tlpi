@@ -4,11 +4,13 @@
 #include "framer.h"
 #include "tlpi_hdr.h"
 
+/* Length-based framing */
+
 #define DELIMITER '\n'
 
 /**
  * Read up to size bytes or until delimiter, copying into the given buffer
- * Return the number of bytes placed in buf (exluding delimiter)
+ * Return the number of bytes placed in buffer (exluding delimiter)
  * 
  * If buffer fills without encountering delimiter, or EOF is found after some data 
  * but before delimiter, negative count is returned
