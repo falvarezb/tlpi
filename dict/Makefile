@@ -1,14 +1,24 @@
 BUILD_DIR = out
 LOG_DIR = logs
 GCC = gcc
-CFLAGS = -g -Wall -Wextra -Wshadow -std=c11 -fprofile-arcs -ftest-coverage
+CFLAGS = -D_POSIX_C_SOURCE=200809 -g -Wall -Wextra -Wshadow -std=c11 -fprofile-arcs -ftest-coverage
 
-#if __linux__
-VALGRIND = valgrind --tool=memcheck --leak-check=full 
-VALGRIND += --verbose --log-file=${LOG_DIR}/valgrind.log
-#else
-VALGRIND = 
-#endif
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Linux)
+	VALGRIND = valgrind --tool=memcheck --leak-check=full 
+	VALGRIND += --verbose --log-file=${LOG_DIR}/valgrind.log
+else
+	VALGRIND = 
+endif
+
+
+.PHONY: all runtest clean
+
+all: runtest
+
+runtest: test
+	$(VALGRIND) ./${BUILD_DIR}/$^
 
 test: ${BUILD_DIR}/dict.o ${BUILD_DIR}/dict_test.o
 	$(GCC) $(CFLAGS) $^ -o ${BUILD_DIR}/$@ -lcmocka
