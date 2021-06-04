@@ -1,28 +1,28 @@
 #include <string.h>
+#include <stdlib.h>
 #include "dict.h"
 
-#define HASHSIZE 101
+#define DICTSIZE 101
 
-static node *dict[HASHSIZE];
+static node_t *dict[DICTSIZE];
 
-char *strdup(char *s)
-{
-    char *p;
-    p = (char *) malloc(strlen(s)+1); /* +1 for '\0' */
-    if (p != NULL)
-        strcpy(p, s);
-    return p;
-}
+// char *strdup(char *s)
+// {    
+//     char *p = (char *) malloc(strlen(s)+1); // +1 for '\0'
+//     if (p != NULL)
+//         strcpy(p, s);
+//     return p;
+// }
 
 unsigned hash(char *s) {
     unsigned hashval;
     for (hashval = 0; *s != '\0'; s++)
         hashval = *s + 31 * hashval;
-    return hashval % HASHSIZE;
+    return hashval % DICTSIZE;
 }
 
-node* lookup(char *key) {
-    node *np;
+node_t* lookup(char *key) {
+    node_t *np;
     
     for(np = dict[hash(key)]; np != NULL; np = np->next) {
         if(strcmp(np->key, key) == 0)
@@ -31,12 +31,12 @@ node* lookup(char *key) {
     return NULL;
 }
 
-node* add(char *key, char *val) {
-    node *np;
+node_t* add(char *key, char *val) {
+    node_t *np;
     unsigned hashval;
 
     if((np = lookup(key)) == NULL){
-        np = (node*) malloc(sizeof(*np));
+        np = (node_t *) malloc(sizeof(*np));
         if (np == NULL || (np->key = strdup(key)) == NULL)
             return NULL;
         hashval = hash(key);
