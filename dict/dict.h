@@ -1,6 +1,8 @@
 #ifndef FAB_DICT
 #define FAB_DICT
 
+#include <stdbool.h>
+
 /*
     - each key-val pair is stored in a node of a linked list
     - each linked list is pointed to by the element of an array
@@ -29,6 +31,11 @@ node_t* lookup(char *key);
 /**
  *  Deletes a key-val pair
  **/
-node_t* remove(char *key);
+bool delete(char *key);
+
+/**
+ * Prints out the elements of the dictionary
+ **/
+void print();
 
 #endif

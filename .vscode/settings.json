@@ -26,6 +26,7 @@
         "is_seqnum.h": "c",
         "inet_sockets.h": "c",
         "__string": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "__node_handle": "c"
     }
 }

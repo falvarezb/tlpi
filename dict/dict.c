@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "dict.h"
 
 #define DICTSIZE 101
@@ -52,4 +53,43 @@ node_t* add(char *key, char *val) {
     if((np->val = strdup(val)) == NULL)
         return NULL;
     return np;
+}
+
+bool delete(char *key) {
+
+    node_t *curr, *prev = NULL;
+
+    int hashval = hash(key);
+    for(curr = dict[hashval]; curr != NULL; prev = curr, curr = curr->next) {
+        if(strcmp(curr->key, key) == 0) {
+            if(prev == NULL) {
+                //remove node from front of list
+                dict[hashval] = curr->next;                
+            } else {                
+                prev->next = curr->next;
+            }
+            free(curr -> key);
+            free(curr -> val);
+            free(curr);
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+void print() {
+    node_t *np;
+
+    for (size_t i = 0; i < DICTSIZE; i++) {
+        int has_elements = 0;
+        for(np = dict[i]; np != NULL; np = np->next) {
+            has_elements = 1;
+            if(np == dict[i])
+                printf("%zu ", i);
+            printf("- (%s,%s) ", np->key, np->val);
+        }
+        if(has_elements)
+            printf("\n");
+    }
 }
