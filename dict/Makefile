@@ -2,7 +2,8 @@ BUILD_DIR = out
 LOG_DIR = logs
 GCC = gcc
 # _POSIX_C_SOURCE=200809 to expose strdup in Linux
-CFLAGS = -D_POSIX_C_SOURCE=200809 -g -Wall -Wextra -Wshadow -std=c11 -fprofile-arcs -ftest-coverage
+CFLAGS = -D_POSIX_C_SOURCE=200809 -g -Wall -Wextra -Wshadow -std=c11
+OBJS := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(wildcard *.c)))
 
 UNAME_S := $(shell uname -s)
 
@@ -21,13 +22,22 @@ all: runtest
 runtest: test
 	$(VALGRIND) ./${BUILD_DIR}/$^
 
-test: ${BUILD_DIR}/dict.o ${BUILD_DIR}/dict_test.o
+test: $(OBJS)
 	$(GCC) $(CFLAGS) $^ -o ${BUILD_DIR}/$@ -lcmocka
 
+$(OBJS): | ${BUILD_DIR} 
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
 ${BUILD_DIR}/%.o: %.c
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+
+
+${BUILD_DIR}:
+	mkdir $@
+
+${LOG_DIR}:
+	mkdir $@
+
 clean:
-	rm -f ${LOG_DIR}/* ${BUILD_DIR}/* *.o *.gcov
+	${RM} ${LOG_DIR}/* ${BUILD_DIR}/* *.o
