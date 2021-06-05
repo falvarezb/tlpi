@@ -27,6 +27,9 @@
         "inet_sockets.h": "c",
         "__string": "c",
         "stdbool.h": "c",
-        "__node_handle": "c"
+        "__node_handle": "c",
+        "semun.h": "c",
+        "sem.h": "c",
+        "binary_sems.h": "c"
     }
 }
