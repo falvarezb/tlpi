@@ -1,6 +1,7 @@
 BUILD_DIR = out
 LOG_DIR = logs
 GCC = gcc
+# _POSIX_C_SOURCE=200809 to expose strdup in Linux
 CFLAGS = -D_POSIX_C_SOURCE=200809 -g -Wall -Wextra -Wshadow -std=c11 -fprofile-arcs -ftest-coverage
 
 UNAME_S := $(shell uname -s)
