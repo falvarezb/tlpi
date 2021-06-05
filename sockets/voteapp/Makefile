@@ -32,6 +32,8 @@ default:
 runsv: $(EXEC_SV)
 	$(VALGRIND) ./$^ $(serverport)
 
+installsv: $(EXEC_SV)
+
 $(EXEC_SV): $(OBJS_SV)
 	$(LINK.c) $^ -o $@ $(LDLIBS)
 
@@ -40,6 +42,8 @@ $(OBJS_SV): | ${OUTPUT_DIRS}
 # client config
 runcl: $(EXEC_CL)
 	$(VALGRIND) ./$^ $(serverhost) $(serverport) $(candidate) $(inquiry)
+
+installcl: $(EXEC_CL)
 
 $(EXEC_CL): $(OBJS_CL)
 	$(LINK.c) $^ -o $@ $(LDLIBS)
