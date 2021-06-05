@@ -66,7 +66,7 @@ bool decode(uint8_t *buf, size_t size, vote_info *v) {
 
     if (strcmp(token, VOTESTR) == 0)
         v->isInquiry = true;
-    else if(trcmp(token, INQSTR) == 0)
+    else if(strcmp(token, INQSTR) == 0)
         v->isInquiry = false;
     else
         return false;
