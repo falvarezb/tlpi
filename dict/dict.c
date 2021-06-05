@@ -7,14 +7,6 @@
 
 static node_t *dict[DICTSIZE];
 
-// char *strdup(char *s)
-// {    
-//     char *p = (char *) malloc(strlen(s)+1); // +1 for '\0'
-//     if (p != NULL)
-//         strcpy(p, s);
-//     return p;
-// }
-
 unsigned hash(char *s) {
     unsigned hashval;
     for (hashval = 0; *s != '\0'; s++)
@@ -68,9 +60,9 @@ bool delete(char *key) {
             } else {                
                 prev->next = curr->next;
             }
-            free(curr -> key);
-            free(curr -> val);
-            free(curr);
+            free((void*) curr->key);
+            free((void*) curr->val);
+            free((void*) curr);
             return 0;
         }
     }
