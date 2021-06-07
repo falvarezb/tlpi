@@ -29,6 +29,14 @@
             "MIMode": "lldb",
             "preLaunchTask": "tcp server",
             "externalConsole": false
+        },
+        {
+            "name": "attach debugger",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "program": "${workspaceRoot}/sockets/voteapp/out/votesv",
+            "MIMode": "lldb"
         }
     ]
 }
