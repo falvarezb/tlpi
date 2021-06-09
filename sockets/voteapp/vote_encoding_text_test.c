@@ -70,12 +70,13 @@ void encode_vote_res(void** state){
 }
 
 void encode_insufficient_buffer_space(void** state){
-    vote_info v = { 0, 1, true, false};
-    size_t bufsize = 5;
+    vote_info v = { 0, 1, false, true};
+    size_t bufsize = 10;
     uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
 
     size_t tot_written = encode(&v, buf, bufsize);    
-    assert_string_equal(buf, "Voti");
+    assert_string_equal(buf, "Voting V ");
+    assert_int_equal(tot_written, strlen("Voting V R 1"));
     free(buf);
 }
 
@@ -139,6 +140,17 @@ void decode_vote_res(void** state){
     free(v);
 }
 
+void decode_incorrect_msg(void** state){
+    const char* msg = "fljljjl";
+    char* buf = strndup(msg, strlen(msg));
+    size_t size = strlen(buf);
+    vote_info *v = (vote_info*) malloc(sizeof(vote_info));
+
+    bool result = decode((uint8_t*) buf, size, v);
+    assert_false(result);
+    free(v);
+}
+
 int main(int argc, char const *argv[])
 {
     const struct CMUnitTest tests[] = {
@@ -150,7 +162,8 @@ int main(int argc, char const *argv[])
         cmocka_unit_test(decode_inq_res),
         cmocka_unit_test(decode_vote_req),
         cmocka_unit_test(decode_vote_res),
-        cmocka_unit_test(encode_insufficient_buffer_space)
+        cmocka_unit_test(encode_insufficient_buffer_space),
+        cmocka_unit_test(decode_incorrect_msg)
     };
     return cmocka_run_group_tests(tests, setup, tear_down);
 }

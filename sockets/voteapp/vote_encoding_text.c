@@ -28,6 +28,11 @@ enum {
  * vote req: "Voting v  12"
  * vote res: "Voting v R 12 20"
  * 
+ * String is truncated if buffer's size is not big enough
+ * 
+ * Notice that only when the returned value is non-negative and less than size, 
+ * the string has been completely written (see 'snprintf')
+ * 
  **/
 size_t encode(vote_info *v, uint8_t *buf, size_t size) {
     //enter();
@@ -37,12 +42,12 @@ size_t encode(vote_info *v, uint8_t *buf, size_t size) {
         errMsg("error while encoding message");
         return -1;
     }
-
-    buf += num_written;    
-    size -= num_written;
+            
     tot_written = num_written;
 
-    if (v->isResponse) {
+    if (v->isResponse && size > num_written) {
+        size -= num_written;
+        buf += num_written;
         if((num_written = snprintf((char *) buf, size, " %llu", v->count)) < 0){
             errMsg("error while encoding message");
             return -1;
