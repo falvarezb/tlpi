@@ -10,66 +10,73 @@
 #define malloc(size) _test_malloc(size, __FILE__, __LINE__)
 #define free(ptr) _test_free(ptr, __FILE__, __LINE__)
 
-typedef struct state {
+struct bufstate {
     size_t bufsize;
     uint8_t *buf;
-} bufstate_t;
+};
 
-int setup(void** state){
-    // bufstate_t *bufstate = malloc(sizeof(bufstate_t));
-    // bufstate->bufsize = 50;
-    // bufstate->buf = malloc(bufstate->bufsize * sizeof(uint8_t));
-    // *state = bufstate;
+int encode_setup(void** state){
+    struct bufstate *bufstate = malloc(sizeof(struct bufstate));
+    bufstate->bufsize = 50;
+    bufstate->buf = malloc(bufstate->bufsize * sizeof(uint8_t));
+    *state = bufstate;
     return 0;
 }
 
-int tear_down(void** state){
-    // void* ptr = (bufstate_t*) ((*state)->bufstate);
-    // free(ptr);
+int encode_tear_down(void** state){
+    free((void*) (((struct bufstate*)(*state))->buf));
+    free((void*) *state);
+    return 0;
+}
+
+int decode_setup(void** state){
+    *state = malloc(sizeof(vote_info));
+    return 0;
+}
+
+int decode_tear_down(void** state){
+    free((void*) *state);
     return 0;
 }
 
 void encode_inq_req(void** state){
     vote_info v = { 0, 1, true, false};
-    size_t bufsize = 50;
-    uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
+    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
+    uint8_t *buf = ((struct bufstate*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
-    assert_string_equal(buf, "Voting I  1");
-    free(buf);
+    assert_string_equal(buf, "Voting I  1");    
 }
 
 void encode_inq_res(void** state){
     vote_info v = { 0, 1, true, true};
-    size_t bufsize = 50;
-    uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
+    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
+    uint8_t *buf = ((struct bufstate*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting I R 1 0");
-    free(buf);
 }
 
 void encode_vote_req(void** state){
     vote_info v = { 0, 1, false, false};
-    size_t bufsize = 50;
-    uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
+    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
+    uint8_t *buf = ((struct bufstate*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting V  1");
-    free(buf);
 }
 
 void encode_vote_res(void** state){
     vote_info v = { 0, 1, false, true};
-    size_t bufsize = 50;
-    uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
+    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
+    uint8_t *buf = ((struct bufstate*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting V R 1 0");
-    free(buf);
 }
 
 void encode_insufficient_buffer_space(void** state){
+    (void) state;
     vote_info v = { 0, 1, false, true};
     size_t bufsize = 10;
     uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
@@ -84,7 +91,7 @@ void decode_inq_req(void** state){
     const char* msg = "Voting I  1";
     char* buf = strndup(msg, strlen(msg));
     size_t size = strlen(buf);
-    vote_info *v = (vote_info*) malloc(sizeof(vote_info));
+    vote_info *v = (vote_info*) *state;
 
     bool result = decode((uint8_t*) buf, size, v);
     assert_true(result);
@@ -92,14 +99,13 @@ void decode_inq_req(void** state){
     assert_int_equal(v->candidate, 1);
     assert_true(v->isInquiry);
     assert_false(v->isResponse);
-    free(v);
 }
 
 void decode_inq_res(void** state){
     const char* msg = "Voting I R 1 0";
     char* buf = strndup(msg, strlen(msg));
     size_t size = strlen(buf);
-    vote_info *v = (vote_info*) malloc(sizeof(vote_info));
+    vote_info *v = (vote_info*) *state;
 
     bool result = decode((uint8_t*) buf, size, v);
     assert_true(result);
@@ -107,14 +113,13 @@ void decode_inq_res(void** state){
     assert_int_equal(v->candidate, 1);
     assert_true(v->isInquiry);
     assert_true(v->isResponse);
-    free(v);
 }
 
 void decode_vote_req(void** state){
     const char* msg = "Voting V  1";
     char* buf = strndup(msg, strlen(msg));
     size_t size = strlen(buf);
-    vote_info *v = (vote_info*) malloc(sizeof(vote_info));
+    vote_info *v = (vote_info*) *state;
 
     bool result = decode((uint8_t*) buf, size, v);
     assert_true(result);
@@ -122,14 +127,13 @@ void decode_vote_req(void** state){
     assert_int_equal(v->candidate, 1);
     assert_false(v->isInquiry);
     assert_false(v->isResponse);
-    free(v);
 }
 
 void decode_vote_res(void** state){
     const char* msg = "Voting V R 1 0";
     char* buf = strndup(msg, strlen(msg));
     size_t size = strlen(buf);
-    vote_info *v = (vote_info*) malloc(sizeof(vote_info));
+    vote_info *v = (vote_info*) *state;
 
     bool result = decode((uint8_t*) buf, size, v);
     assert_true(result);
@@ -137,33 +141,33 @@ void decode_vote_res(void** state){
     assert_int_equal(v->candidate, 1);
     assert_false(v->isInquiry);
     assert_true(v->isResponse);
-    free(v);
 }
 
 void decode_incorrect_msg(void** state){
     const char* msg = "fljljjl";
     char* buf = strndup(msg, strlen(msg));
     size_t size = strlen(buf);
-    vote_info *v = (vote_info*) malloc(sizeof(vote_info));
+    vote_info *v = (vote_info*) *state;
 
     bool result = decode((uint8_t*) buf, size, v);
     assert_false(result);
-    free(v);
 }
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
+    (void)argc;
+    (void)argv;
+
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(encode_inq_req),
-        cmocka_unit_test(encode_inq_res),
-        cmocka_unit_test(encode_vote_req),
-        cmocka_unit_test(encode_vote_res),
-        cmocka_unit_test(decode_inq_req),
-        cmocka_unit_test(decode_inq_res),
-        cmocka_unit_test(decode_vote_req),
-        cmocka_unit_test(decode_vote_res),
-        cmocka_unit_test(encode_insufficient_buffer_space),
-        cmocka_unit_test(decode_incorrect_msg)
+        cmocka_unit_test_setup_teardown(encode_inq_req, encode_setup, encode_tear_down),
+        cmocka_unit_test_setup_teardown(encode_inq_res, encode_setup, encode_tear_down),
+        cmocka_unit_test_setup_teardown(encode_vote_req, encode_setup, encode_tear_down),
+        cmocka_unit_test_setup_teardown(encode_vote_res, encode_setup, encode_tear_down),
+        cmocka_unit_test_setup_teardown(encode_insufficient_buffer_space, encode_setup, encode_tear_down),
+        cmocka_unit_test_setup_teardown(decode_inq_req, decode_setup, decode_tear_down),
+        cmocka_unit_test_setup_teardown(decode_inq_res, decode_setup, decode_tear_down),
+        cmocka_unit_test_setup_teardown(decode_vote_req, decode_setup, decode_tear_down),
+        cmocka_unit_test_setup_teardown(decode_vote_res, decode_setup, decode_tear_down),        
+        cmocka_unit_test_setup_teardown(decode_incorrect_msg, decode_setup, decode_tear_down)
     };
-    return cmocka_run_group_tests(tests, setup, tear_down);
+    return cmocka_run_group_tests(tests, NULL, NULL);
 }
