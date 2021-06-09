@@ -34,7 +34,7 @@ void encode_inq_req(void** state){
     size_t bufsize = 50;
     uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
 
-    size_t tot_written = encode(&v, buf, bufsize);    
+    encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting I  1");
     free(buf);
 }
@@ -44,7 +44,7 @@ void encode_inq_res(void** state){
     size_t bufsize = 50;
     uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
 
-    size_t tot_written = encode(&v, buf, bufsize);    
+    encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting I R 1 0");
     free(buf);
 }
@@ -54,7 +54,7 @@ void encode_vote_req(void** state){
     size_t bufsize = 50;
     uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
 
-    size_t tot_written = encode(&v, buf, bufsize);    
+    encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting V  1");
     free(buf);
 }
@@ -64,8 +64,18 @@ void encode_vote_res(void** state){
     size_t bufsize = 50;
     uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
 
-    size_t tot_written = encode(&v, buf, bufsize);    
+    encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting V R 1 0");
+    free(buf);
+}
+
+void encode_insufficient_buffer_space(void** state){
+    vote_info v = { 0, 1, true, false};
+    size_t bufsize = 5;
+    uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
+
+    size_t tot_written = encode(&v, buf, bufsize);    
+    assert_string_equal(buf, "Voti");
     free(buf);
 }
 
@@ -129,19 +139,6 @@ void decode_vote_res(void** state){
     free(v);
 }
 
-void encode_insufficient_buffer_space(void** state){
-    vote_info v = { 0, 1, true, false};
-    size_t bufsize = 5;
-    uint8_t *buf = malloc(bufsize * sizeof(uint8_t));
-
-    size_t tot_written = encode(&v, buf, bufsize);
-    buf[tot_written] = '\0';
-    assert_string_equal(buf, "Voting I  1");
-    // assert_return_code(10, 2);
-    //expect_assert_failure(encode(&v, buf, bufsize);)
-    free(buf);
-}
-
 int main(int argc, char const *argv[])
 {
     const struct CMUnitTest tests[] = {
@@ -152,7 +149,8 @@ int main(int argc, char const *argv[])
         cmocka_unit_test(decode_inq_req),
         cmocka_unit_test(decode_inq_res),
         cmocka_unit_test(decode_vote_req),
-        cmocka_unit_test(decode_vote_res)
+        cmocka_unit_test(decode_vote_res),
+        cmocka_unit_test(encode_insufficient_buffer_space)
     };
     return cmocka_run_group_tests(tests, setup, tear_down);
 }

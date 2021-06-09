@@ -33,16 +33,17 @@ size_t encode(vote_info *v, uint8_t *buf, size_t size) {
     //enter();
     size_t num_written, tot_written;
 
-    if((num_written = sprintf((char *) buf, "%s %s %s %d", MAGIC,(v->isInquiry ? INQSTR : VOTESTR), (v->isResponse ? RESPONSESTR : ""), v->candidate)) < 0) {
+    if((num_written = snprintf((char *) buf, size, "%s %s %s %d", MAGIC,(v->isInquiry ? INQSTR : VOTESTR), (v->isResponse ? RESPONSESTR : ""), v->candidate)) < 0) {
         errMsg("error while encoding message");
         return -1;
     }
 
     buf += num_written;    
+    size -= num_written;
     tot_written = num_written;
 
     if (v->isResponse) {
-        if((num_written = sprintf((char *) buf, " %llu", v->count)) < 0){
+        if((num_written = snprintf((char *) buf, size, " %llu", v->count)) < 0){
             errMsg("error while encoding message");
             return -1;
         }
@@ -57,14 +58,12 @@ size_t encode(vote_info *v, uint8_t *buf, size_t size) {
  * Note: modifies input buffer.
  * */
 bool decode(uint8_t *buf, size_t size, vote_info *v) {
-    //enter();
-    char *token;
-    char * temp = (char *) buf;
 
-    //magic string
     //cast to char* is justified because the content of buf is ASCII (0-127),
     //therefore no change of sign will happen when casting    
-    token = strtok((char *) buf, DELIMSTR);
+    char *token = strtok((char *) buf, DELIMSTR);
+    
+    //magic string
     if (token == NULL || strcmp(token, MAGIC) != 0)
         return false;
 
