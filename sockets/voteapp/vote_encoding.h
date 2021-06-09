@@ -16,7 +16,7 @@ bool decode(uint8_t *buf, size_t size, vote_info *v);
 
 /**
  * takes a vote_info structure as input and converts it to a sequence of bytes according 
- * to a particular wire format encoding; it returns the size of the resulting byte sequence
+ * to a particular wire format encoding
  * 
  * it returns the size of the resulting byte sequence
  **/

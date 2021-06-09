@@ -4,14 +4,14 @@
 #define enter() printf("enter: %s\n", __func__)
 
 /**
- * Wire format:
+ * Wire format (only ASCII chars):
  * "Voting <v|i> [R] <candidate ID> <count>" 
 **/
 
 
 static const char *MAGIC = "Voting";
-static const char *VOTESTR = "v";
-static const char *INQSTR = "i";
+static const char *INQSTR = "I";
+static const char *VOTESTR = "V";
 static const char *RESPONSESTR = "R";
 static const char *DELIMSTR = " ";
 
@@ -21,29 +21,35 @@ enum {
 
 /**
  * Encode voting message info as a text string.
+ * 
+ * Example:
+ * inquiry req: "Voting i  12"
+ * inquiry res: "Voting i R 12 20"
+ * vote req: "Voting v  12"
+ * vote res: "Voting v R 12 20"
+ * 
  **/
 size_t encode(vote_info *v, uint8_t *buf, size_t size) {
-    enter();
+    //enter();
     size_t num_written, tot_written;
 
-    if((num_written = sprintf((char *) buf, size, "%s %c %s %d", MAGIC,(v->isInquiry ? 'i' : 'v'), (v->isResponse ? "R" : ""), v->candidate)) < 0) {
+    if((num_written = sprintf((char *) buf, "%s %s %s %d", MAGIC,(v->isInquiry ? INQSTR : VOTESTR), (v->isResponse ? RESPONSESTR : ""), v->candidate)) < 0) {
         errMsg("error while encoding message");
         return -1;
     }
 
-    buf += num_written;
-    size -= num_written;
+    buf += num_written;    
     tot_written = num_written;
 
     if (v->isResponse) {
-        if((num_written = sprintf((char *) buf, size, " %llu", v->count)) < 0){
+        if((num_written = sprintf((char *) buf, " %llu", v->count)) < 0){
             errMsg("error while encoding message");
             return -1;
         }
         tot_written += num_written;
     }
 
-    return num_written;
+    return tot_written;
 }
 
 /**
@@ -51,10 +57,13 @@ size_t encode(vote_info *v, uint8_t *buf, size_t size) {
  * Note: modifies input buffer.
  * */
 bool decode(uint8_t *buf, size_t size, vote_info *v) {
-    
+    //enter();
     char *token;
+    char * temp = (char *) buf;
 
     //magic string
+    //cast to char* is justified because the content of buf is ASCII (0-127),
+    //therefore no change of sign will happen when casting    
     token = strtok((char *) buf, DELIMSTR);
     if (token == NULL || strcmp(token, MAGIC) != 0)
         return false;
@@ -64,12 +73,10 @@ bool decode(uint8_t *buf, size_t size, vote_info *v) {
     if(token == NULL)
         return false;
 
-    if (strcmp(token, VOTESTR) == 0)
+    if (strcmp(token, INQSTR) == 0)
         v->isInquiry = true;
-    else if(strcmp(token, INQSTR) == 0)
-        v->isInquiry = false;
     else
-        return false;
+        v->isInquiry = false;
 
     // Next token is either Response flag or candidate ID
     token = strtok(NULL, DELIMSTR);

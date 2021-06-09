@@ -2,7 +2,8 @@ BUILD_DIR = out
 LOG_DIR = logs
 OUTPUT_DIRS = ${BUILD_DIR} ${LOG_DIR}
 
-CFLAGS = -g -Wall -Wextra -Wshadow -std=c11 -I../../lib -I../ -L../..
+CFLAGS = -g -Wall -Wextra -Wshadow -std=c11 -I../../lib
+LDFLAGS = -L../..
 SRCS_PROTOCOL := delimiter_framer.c vote_encoding_text.c
 SRCS_SV := vote_sv.c $(SRCS_PROTOCOL)
 SRCS_CL := vote_cl.c $(SRCS_PROTOCOL)
@@ -11,6 +12,7 @@ OBJS_CL := $(addprefix $(BUILD_DIR)/, $(patsubst %.c,%.o,$(SRCS_CL)))
 LDLIBS = -ltlpi
 EXEC_SV = $(BUILD_DIR)/votesv
 EXEC_CL = $(BUILD_DIR)/votecl
+EXEC_TEST_ENC_TEXT = $(BUILD_DIR)/t_enctext
 
 
 UNAME_S := $(shell uname -s)
@@ -23,12 +25,18 @@ else
 endif
 
 
-.PHONY: default runsv runcl clean
+.PHONY: all runsv runcl install install test clean
 
-default:
-	@echo "specify option"
+all: test install
 
-# server config
+install: installsv installcl
+
+test: t_enctext
+
+
+####################### 
+#### server goals  ####
+#######################
 runsv: $(EXEC_SV)
 	$(VALGRIND) ./$^ $(serverport)
 
@@ -39,7 +47,9 @@ $(EXEC_SV): $(OBJS_SV)
 
 $(OBJS_SV): | ${OUTPUT_DIRS}
 
-# client config
+####################### 
+#### client goals  ####
+#######################
 runcl: $(EXEC_CL)
 	$(VALGRIND) ./$^ $(serverhost) $(serverport) $(candidate) $(inquiry)
 
@@ -50,6 +60,19 @@ $(EXEC_CL): $(OBJS_CL)
 
 $(OBJS_CL): | ${OUTPUT_DIRS}
 
+
+####################### 
+#### test goals  ######
+#######################
+
+t_enctext: $(EXEC_TEST_ENC_TEXT)
+	$(VALGRIND) ./$^
+
+
+$(EXEC_TEST_ENC_TEXT): $(BUILD_DIR)/vote_encoding_text.o $(BUILD_DIR)/vote_encoding_text_test.o
+	$(LINK.c) $^ -o $@ $(LDLIBS) -lcmocka
+
+
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
 ${BUILD_DIR}/%.o: %.c
 	$(COMPILE.c) $< -o $@
@@ -59,4 +82,4 @@ ${OUTPUT_DIRS}:
 	mkdir $@
 
 clean:
-	${RM} ${LOG_DIR}/* ${BUILD_DIR}/* *.o
+	${RM} -r ${LOG_DIR}/* ${BUILD_DIR}/* *.o

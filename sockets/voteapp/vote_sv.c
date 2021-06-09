@@ -15,6 +15,7 @@
 
 int main(int argc, char *argv[]) {  
 
+    //dict containing mapping between candidate id and their number of votes
     int counts[MAX_CANDIDATE] = {0};
 
     if (argc < 2 || strcmp(argv[1], "--help") == 0) usageErr("%s server-port\n", argv[0]);
@@ -31,14 +32,14 @@ int main(int argc, char *argv[]) {
         char addrStr[ADDRSTRLEN];
     } cldata;
 
-    if ((tcpfd = inetListen(serverport, BACKLOG, NULL)) == -1) errExit("error while opening tcp socket");
+    if ((tcpfd = inetListen(serverport, BACKLOG, NULL)) == -1) errExit("error while opening tcp socket\n");
     printf("listening for tcp connections on port %s...\n", serverport);
 
     while(1) { //process clients iteratively
 
         cldata.addrlen = sizeof(struct sockaddr_storage);                
         if ((cldata.cfd = accept(tcpfd, (struct sockaddr *) &cldata.claddr, &cldata.addrlen)) == -1) {
-            errMsg("error while connecting to client");
+            errMsg("error while connecting to client\n");
             continue;
         }        
         printf("Connection from %s\n", inetAddressStr((struct sockaddr *) &cldata.claddr, cldata.addrlen, cldata.addrStr, ADDRSTRLEN));  
@@ -66,12 +67,13 @@ int main(int argc, char *argv[]) {
                         v.count = counts[v.candidate];
                     } else {
                         // Ignore invalid candidates
+                        printf("invalid candidate %d\n", v.candidate);
                     }
 
                     uint8_t outbuf[MAX_WIRE_SIZE];
                     msg_size = encode(&v, outbuf, MAX_WIRE_SIZE);
                     if(put_msg(outbuf, msg_size, channel) < 0) {
-                        errMsg("error framing/outputting message, closing connection");
+                        errMsg("error framing/outputting message, closing connection\n");
                         break;
                     } else {
                         printf("Processed %s for candidate %d; current count is %llu.\n", (v.isInquiry ? "inquiry" : "vote"), v.candidate, v.count);
@@ -79,11 +81,11 @@ int main(int argc, char *argv[]) {
                     fflush(channel);
                 }
             } else {
-                errMsg("parsing error, closing connection");
+                errMsg("parsing error");
                 break;
             }
         }
-        printf("client finished, closing connection");
+        printf("closing connection\n");
         fclose(channel);
     }
 }

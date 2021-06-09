@@ -23,9 +23,8 @@ size_t get_next_msg(FILE *in, uint8_t *buf, size_t size) {
 
     while (count < size) {
         nextc = getc(in);
-        if(nextc == EOF) {
-            errMsg("error when getting char");
-            return count > 0 ? -count : -1;
+        if(nextc == EOF) {            
+            return /*count > 0 ? -count :*/ -1;
         } else if (nextc == DELIMITER) {
             return count;
         }

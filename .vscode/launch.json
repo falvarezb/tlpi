@@ -31,6 +31,18 @@
             "externalConsole": false
         },
         {
+            "name": "test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/out/${fileBasenameNoExtension}",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "MIMode": "lldb",
+            "preLaunchTask": "test",
+            "externalConsole": false
+        },
+        {
             "name": "attach debugger",
             "type": "cppdbg",
             "request": "attach",
