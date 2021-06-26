@@ -10,21 +10,21 @@
 #define malloc(size) _test_malloc(size, __FILE__, __LINE__)
 #define free(ptr) _test_free(ptr, __FILE__, __LINE__)
 
-struct bufstate {
+struct statebuf {
     size_t bufsize;
     uint8_t *buf;
 };
 
 int encode_setup(void** state){
-    struct bufstate *bufstate = malloc(sizeof(struct bufstate));
-    bufstate->bufsize = 50;
-    bufstate->buf = malloc(bufstate->bufsize * sizeof(uint8_t));
-    *state = bufstate;
+    struct statebuf *statebuf = malloc(sizeof(struct statebuf));
+    statebuf->bufsize = 50;
+    statebuf->buf = malloc(statebuf->bufsize * sizeof(uint8_t));
+    *state = statebuf;
     return 0;
 }
 
 int encode_tear_down(void** state){
-    free((void*) (((struct bufstate*)(*state))->buf));
+    free((void*) (((struct statebuf*)(*state))->buf));
     free((void*) *state);
     return 0;
 }
@@ -41,8 +41,8 @@ int decode_tear_down(void** state){
 
 void encode_inq_req(void** state){
     vote_info v = { 0, 1, true, false};
-    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
-    uint8_t *buf = ((struct bufstate*)(*state))->buf;
+    size_t bufsize = ((struct statebuf*)(*state))->bufsize;    
+    uint8_t *buf = ((struct statebuf*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting I  1");    
@@ -50,8 +50,8 @@ void encode_inq_req(void** state){
 
 void encode_inq_res(void** state){
     vote_info v = { 0, 1, true, true};
-    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
-    uint8_t *buf = ((struct bufstate*)(*state))->buf;
+    size_t bufsize = ((struct statebuf*)(*state))->bufsize;    
+    uint8_t *buf = ((struct statebuf*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting I R 1 0");
@@ -59,8 +59,8 @@ void encode_inq_res(void** state){
 
 void encode_vote_req(void** state){
     vote_info v = { 0, 1, false, false};
-    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
-    uint8_t *buf = ((struct bufstate*)(*state))->buf;
+    size_t bufsize = ((struct statebuf*)(*state))->bufsize;    
+    uint8_t *buf = ((struct statebuf*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting V  1");
@@ -68,8 +68,8 @@ void encode_vote_req(void** state){
 
 void encode_vote_res(void** state){
     vote_info v = { 0, 1, false, true};
-    size_t bufsize = ((struct bufstate*)(*state))->bufsize;    
-    uint8_t *buf = ((struct bufstate*)(*state))->buf;
+    size_t bufsize = ((struct statebuf*)(*state))->bufsize;    
+    uint8_t *buf = ((struct statebuf*)(*state))->buf;
 
     encode(&v, buf, bufsize);    
     assert_string_equal(buf, "Voting V R 1 0");
