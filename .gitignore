@@ -2,4 +2,4 @@ out/
 *.log
 testfiles/
 *.o
-.vscode/
+*.code-workspace

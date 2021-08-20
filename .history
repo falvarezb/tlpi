@@ -1,4 +1,5 @@
-run Build_ename.sh
+
+run lib/Build_ename.sh
 gcc  -I./lib fileio/copy.c lib/error_functions.c -o fileio/out/runcopy
 gcc  -I./lib fileio/tee.c lib/error_functions.c -o fileio/out/runtee
 gcc  -I./lib fileio/seek_io.c lib/error_functions.c lib/get_num.c -o fileio/out/seek_io
