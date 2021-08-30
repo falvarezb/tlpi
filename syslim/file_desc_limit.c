@@ -44,6 +44,10 @@
 
 #define MY_FILES "myfiles"
 
+#define errExit(msg) do { \
+    perror(msg); exit(EXIT_FAILURE); \
+} while (0)
+
 /**
  * Update soft limit of resource RLIMIT_NOFILE to 'value'
  */
@@ -66,8 +70,7 @@ char* fd_symlink(int fd, const size_t fd_size) {
     const size_t link_name_buf_size = strlen("/proc/self/fd/") + fd_size;
     char* link_name_buf = (char*)malloc(link_name_buf_size);
     if (link_name_buf == NULL) {
-        perror("insufficient memory to create link_name\n");
-        exit(EXIT_FAILURE);
+        errExit("insufficient memory to create link_name\n");        
     }
     sprintf(link_name_buf, "/proc/self/fd/%d", fd);
     return link_name_buf;
@@ -80,23 +83,20 @@ char* read_link(char* link_name_buf) {
     struct stat sb;
 
     if (lstat(link_name_buf, &sb) == -1) {
-        perror("lstat");
-        exit(EXIT_FAILURE);
+        errExit("lstat");        
     }
 
     //sb.st_size given by 'lstat' is the length of the symlink's target's pathname
     char* link_target = (char*)malloc(sb.st_size + 1);
     if (link_target == NULL) {
-        perror("insufficient memory to create link_target\n");
-        exit(EXIT_FAILURE);
+        errExit("insufficient memory to create link_target\n");        
     }
 
     // sb.st_size is the expected size of the target's pathname
     // readlink returns the actual size
     ssize_t actual_size = readlink(link_name_buf, link_target, sb.st_size);
     if (actual_size < 0) {
-        perror("readlink");
-        exit(EXIT_FAILURE);
+        errExit("readlink");        
     }
 
     if (actual_size > sb.st_size) {
@@ -142,8 +142,7 @@ int main(int argc, char const* argv[])
 
     // creating folder
     if(mkdir(MY_FILES, S_IRUSR | S_IWUSR | S_IXUSR) == -1 && errno != EEXIST){
-        perror("mkdir");
-        exit(EXIT_FAILURE);
+        errExit("mkdir");        
     }
 
     // creating/opening files
@@ -152,12 +151,11 @@ int main(int argc, char const* argv[])
     {
         char filename_buf[filename_buf_size];
         sprintf(filename_buf, filename, i);
-        int inputFd = open(filename_buf, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR);
+        int inputFd = open(filename_buf, O_CREAT | O_RDONLY, S_IRUSR);
         if (inputFd == -1)
         {
             printf("error while opening file %s\n", filename_buf);
-            perror("open");
-            exit(EXIT_FAILURE);
+            errExit("open");
         }
     }
 
@@ -176,8 +174,7 @@ int main(int argc, char const* argv[])
         char file_path[PATH_MAX];
         if (fcntl(fd, F_GETPATH, file_path) == -1)
         {
-            perror("fcntl error");
-            break;
+            errExit("fcntl error");            
         }
 
         printf("fd=%zu, path=%s\n", fd, file_path);
