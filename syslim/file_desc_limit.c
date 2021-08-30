@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <stdint.h>
 
 /**
  * code to create 'myfiles' folder
@@ -52,7 +53,10 @@ void update_nofiles_soft_limit(char const* value, struct rlimit rl) {
     if (setrlimit(RLIMIT_NOFILE, &rl) == -1) {
         perror("setrlimit");
     }
-    printf("new soft limit of RLIMIT_NOFILE:%llu\n", rl.rlim_cur);
+
+    // rlim_t is a long int in Linux and long long int in Apple
+    // to handle both cases, we cast the value to uintmax_t and use the corresponding format specifier
+    printf("new soft limit of RLIMIT_NOFILE:%ju\n", (uintmax_t) rl.rlim_cur);
 }
 
 /**
@@ -97,7 +101,7 @@ char* read_link(char* link_name_buf) {
 
     if (actual_size > sb.st_size) {
         perror("symlink increased in size between lstat() and readlink(), value of link_target has been truncated\n");
-        printf("original value %lld, new value %ld\n", sb.st_size, actual_size);
+        printf("original value %jd, new value %ld\n", (uintmax_t) sb.st_size, actual_size);
         exit(EXIT_FAILURE);
     }
 
@@ -125,7 +129,7 @@ int main(int argc, char const* argv[])
     if (getrlimit(RLIMIT_NOFILE, &rl) == -1) {
         perror("getrlimit");
     }
-    printf("soft limit of RLIMIT_NOFILE:%llu\n", rl.rlim_cur);
+    printf("soft limit of RLIMIT_NOFILE:%ju\n", (uintmax_t) rl.rlim_cur);
 
     // updating soft limit of RLIMIT_NOFILE
     if (argc == 3) {
