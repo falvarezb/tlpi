@@ -19,3 +19,12 @@ gcc -c -I./lib sockets/inet_sockets.c lib/error_functions.c lib/get_num.c
 
 gcc sockets/tcpclient.c -o sockets/out/tcpclient
 gcc  -I./lib sockets/tcpserver.c lib/error_functions.c sockets/inet_sockets.c -o sockets/out/tcpserver
+
+
+gcc  -I./lib sockets/voteapp/vote_cl.c lib/error_functions.c sockets/inet_sockets.c -o sockets/out/votecl
+gcc  -I./lib sockets/voteapp/vote_sv.c lib/error_functions.c sockets/inet_sockets.c -o sockets/out/votesv
+
+
+## filesys
+
+gcc  -I./lib filesys/t_statfs.c lib/error_functions.c -o filesys/out/statfs
