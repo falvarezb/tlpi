@@ -21,7 +21,7 @@ void errorExit(char *format, const char *text) {
 }
 
 int main(int argc, char const *argv[]) {
-    ssize_t num_read, num_holes = 0;
+    ssize_t num_read, num_read_acc = 0, num_holes = 0;
     off_t file_size;
     char buf[BUF_SIZE];
 
@@ -40,19 +40,24 @@ int main(int argc, char const *argv[]) {
     if (lseek(fd, 0, SEEK_SET) == -1) {
         errorExit("error %d while seeking in file %s", argv[1]);
     }
-
+    printf("|");
     while ((num_read = read(fd, buf, BUF_SIZE)) > 0) {
         for (size_t i = 0; i < num_read; i++) {
+            num_read_acc++;
             if (buf[i] == '\0') {
                 num_holes++;
+                printf("*");
+            } else {
+                printf(" ");
             }
         }
     }
+    printf("|\n");
 
     if (num_read == -1) errorExit("error %d while reading file %s", argv[1]);
 
     if (close(fd) == -1) perror("close input");
-    printf("num holes = %ld, file size = %lld, %% holes = %.2f\n", num_holes, file_size, num_holes * 100 / (float) file_size);
+    printf("num holes = %ld, file size = %lld, %.2f%%\n", num_holes, file_size, num_holes * 100 / (float) file_size);
 
     exit(EXIT_SUCCESS);
 }
