@@ -30,7 +30,7 @@
         "__node_handle": "c",
         "semun.h": "c",
         "sem.h": "c",
-        "binary_sems.h": "c",        
+        "binary_sems.h": "c",
         "vote_encoding.h": "c",
         "cmocka.h": "c",
         "atomic": "c",
@@ -49,6 +49,8 @@
         "utility": "c",
         "vector": "c",
         "param.h": "c",
-        "mount.h": "c"
+        "mount.h": "c",
+        "cstdio": "c",
+        "ratio": "c"
     }
 }

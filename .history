@@ -28,3 +28,7 @@ gcc  -I./lib sockets/voteapp/vote_sv.c lib/error_functions.c sockets/inet_socket
 ## filesys
 
 gcc  -I./lib filesys/t_statfs.c lib/error_functions.c -o filesys/out/statfs
+
+
+## dirs_links
+gcc  -I./lib dirs_links/t_unlink.c  lib/*.c -o dirs_links/out/t_unlink
