@@ -24,6 +24,10 @@ gcc  -I./lib sockets/tcpserver.c lib/error_functions.c sockets/inet_sockets.c -o
 gcc  -I./lib sockets/voteapp/vote_cl.c lib/error_functions.c sockets/inet_sockets.c -o sockets/out/votecl
 gcc  -I./lib sockets/voteapp/vote_sv.c lib/error_functions.c sockets/inet_sockets.c -o sockets/out/votesv
 
+## filebuff
+
+gcc  -DUSE_O_SYNC -I./lib filebuff/write_bytes.c lib/error_functions.c lib/get_num.c -o filebuff/out/write_bytes
+gcc  -I./lib filebuff/write_bytes.c lib/error_functions.c lib/get_num.c -o filebuff/out/write_bytes
 
 ## filesys
 
