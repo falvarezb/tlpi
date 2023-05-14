@@ -20,6 +20,7 @@
 static void *
 threadFunc(void *arg)
 {
+    sleep(5);
     char *s = (char *) arg;
 
     printf("%s", s);
@@ -27,14 +28,25 @@ threadFunc(void *arg)
     return (void *) strlen(s);
 }
 
-int
-main(int argc, char *argv[])
-{
-    pthread_t t1;
-    void *res;
-    int s;
+static void * threadDoNothing(void *arg) {return NULL;}
+static void * detachedThread(void *arg) {
+    pthread_detach(pthread_self());
+    return NULL;
+}
+static void * threadExit(void *arg) {
+    printf("message from thread before exit\n");
+    pthread_join(pthread_self(), NULL);
+    //exit(EXIT_SUCCESS);
+}
 
-    s = pthread_create(&t1, NULL, threadFunc, "Hello world\n");
+/**
+ * main thread waits and joins child thread
+ */
+int case1() {
+    pthread_t t1;
+    void *res;    
+
+    int s = pthread_create(&t1, NULL, threadFunc, "Hello world\n");
     if (s != 0)
         errExitEN(s, "pthread_create");
 
@@ -46,4 +58,101 @@ main(int argc, char *argv[])
     printf("Thread returned %ld\n", (long) res);
 
     exit(EXIT_SUCCESS);
+}
+
+/**
+ * main thread ends its execution without waiting for child to finish and the entire process finishes
+ */
+int case2() {
+    pthread_t t1;      
+
+    int s = pthread_create(&t1, NULL, threadFunc, "Hello world\n");
+    if (s != 0)
+        errExitEN(s, "pthread_create");
+
+    printf("Message from main()\n");
+    return 0;
+}
+
+/**
+ * main thread exits but child continues running
+ */
+int case3() {
+    pthread_t t1;      
+
+    int s = pthread_create(&t1, NULL, threadFunc, "Hello world\n");
+    if (s != 0)
+        errExitEN(s, "pthread_create");
+
+    printf("Message from main()\n");
+    pthread_exit(NULL);
+}
+
+/**
+ * creation of zombie threads (child threads that are not joined by some other thread)
+ */
+void case4() {
+    pthread_t t1;      
+    int num_threads = 100000;
+    for (int i = 0; i < num_threads; i++){
+        int s = pthread_create(&t1, NULL, threadDoNothing, NULL);
+        if (s != 0)
+            errExitEN(s, "pthread_create");
+
+        if(i%(num_threads/10) == 0) {
+          printf("New thread created - %d\n", i);
+        }
+        //sleep(1);
+    }
+    printf("Message from main()\n");
+}
+
+/**
+ * creation of detached threads (child threads that do not need to be joined)
+ */
+void case5() {
+    pthread_t t1;      
+    int num_threads = 100000;
+    for (int i = 0; i < num_threads; i++){
+        int s = pthread_create(&t1, NULL, detachedThread, NULL);
+        if (s != 0)
+            errExitEN(s, "pthread_create");
+
+        if(i%(num_threads/10) == 0) {
+          printf("New thread created - %d\n", i);
+        }
+        //sleep(1);
+    }
+    printf("Message from main()\n");
+}
+
+/**
+ * an exit by any thread finishes all other threads and the entire process
+ */
+void case6() {
+    pthread_t t1;          
+    
+    int s = pthread_create(&t1, NULL, threadExit, NULL);
+    if (s != 0)
+        errExitEN(s, "pthread_create");
+
+    //sleep to give time for the child thread to exit
+    sleep(5);    
+    printf("This is never written\n");
+}
+
+/**
+ * thread joining with itself
+ */
+void case7() {        
+    
+    pthread_join(pthread_self(), NULL);
+    printf("This is never written\n");
+}
+
+int
+main(int argc, char *argv[])
+{
+    case6();
+    
 }
