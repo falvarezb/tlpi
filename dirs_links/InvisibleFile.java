@@ -1,7 +1,7 @@
 
 import java.io.*;
 
-public class Main {
+public class InvisibleFile {
     public static void main(String args[]) throws InterruptedException, IOException {
         File invisibleFile = new File("invisiblefile");
         invisibleFile.createNewFile();

@@ -5,11 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "SimpleThread",
+            "request": "launch",
+            "mainClass": "threads.SimpleThread",
+            "projectName": "tlpi_c45a9d3"
+        },
+        {
             "name": "gcc - Build and debug active file",
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/out/${fileBasenameNoExtension}",
-            "args": ["/Users/franciscoalvarez/MyProjects/tlpi-dist/myfile"],
+            "args": [
+                "/Users/franciscoalvarez/MyProjects/tlpi-dist/myfile"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -22,7 +31,11 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/out/${fileBasenameNoExtension}",
-            "args": ["localhost", "./sockets/testfiles/temp2.txt", "1"],
+            "args": [
+                "localhost",
+                "./sockets/testfiles/temp2.txt",
+                "1"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
